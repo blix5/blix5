@@ -15,8 +15,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetches full history so git rebase/pull works
 
       - name: git-profile-koi
         uses: yalongwastaken/git-koi@v1.0.1
@@ -27,7 +25,23 @@ jobs:
           token: ${{ github.token }}
 
       - name: Commit and push koi assets
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Update profile assets"
-          file_pattern: "koi/*"
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # 1. Fetch latest remote commit
+          git fetch origin "${GITHUB_REF_NAME}"
+          
+          # 2. Reset HEAD to remote while preserving newly generated koi/ files
+          git reset --mixed "origin/${GITHUB_REF_NAME}"
+          
+          # 3. Stage changes and exit early if nothing changed
+          git add koi/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          
+          # 4. Commit and fast-forward push
+          git commit -m "Update profile assets"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
