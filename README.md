@@ -1,3 +1,2 @@
-i code
-
-![My Git Koi](koi/koi.gif)
+i make things
+<img src="koi/koi.gif" width="200" alt="git-koi">
