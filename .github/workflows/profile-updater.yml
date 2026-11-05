@@ -21,11 +21,21 @@ jobs:
           output-dir: koi
           token: ${{ github.token }}
 
-      - name: Rebase on latest branch tip
-        run: git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
-
       - name: Commit and push koi assets
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Update profile assets"
-          file_pattern: "koi/*"
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add koi/
+          git diff --staged --quiet && { echo "No changes to commit"; exit 0; }
+          git commit -m "Update profile assets"
+          for attempt in 1 2 3; do
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              echo "Push failed after $attempt attempts"
+              exit 1
+            fi
+            sleep 2
+          done
