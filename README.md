@@ -1,2 +1,2 @@
 i make things
-<img src="koi/koi.gif" style="width: 200px; height: 150px; object-fit: cover; object-position: 20% 30%;" />
+<img src="koi/koi.gif" style="width: 200px; height: 120px; display: block; object-fit: none; object-position: 50% -40px;" />
