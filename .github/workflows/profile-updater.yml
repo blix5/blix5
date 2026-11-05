@@ -21,10 +21,8 @@ jobs:
           output-dir: koi
           token: ${{ github.token }}
 
-      - name: Commit and Push Changes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add koi/
-          git commit -m "Update profile assets" || echo "No changes to commit"
-          git push
+      - name: Commit and push koi assets
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update profile assets"
+          file_pattern: "koi/*"
