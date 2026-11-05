@@ -17,7 +17,7 @@ jobs:
         uses: yalongwastaken/git-koi@v1.0.1
         with:
           login: ${{ github.repository_owner }}
-          body: white
+          body: black
           output-dir: koi
           token: ${{ github.token }}
 
