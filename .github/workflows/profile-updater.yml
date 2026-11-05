@@ -29,19 +29,27 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          # 1. Fetch latest remote commit
-          git fetch origin "${GITHUB_REF_NAME}"
+          TARGET_BRANCH="${GITHUB_REF_NAME:-main}"
           
-          # 2. Reset HEAD to remote while preserving newly generated koi/ files
-          git reset --mixed "origin/${GITHUB_REF_NAME}"
+          # 1. Back up generated koi files to temp directory outside git
+          mkdir -p /tmp/koi_assets
+          cp -r koi/* /tmp/koi_assets/
           
-          # 3. Stage changes and exit early if nothing changed
+          # 2. Sync local branch exactly with latest remote state
+          git fetch origin "${TARGET_BRANCH}"
+          git reset --hard "origin/${TARGET_BRANCH}"
+          
+          # 3. Restore the new assets back into the workspace
+          mkdir -p koi
+          cp -r /tmp/koi_assets/* koi/
+          
+          # 4. Check for actual changes
           git add koi/
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
           fi
           
-          # 4. Commit and fast-forward push
+          # 5. Commit and fast-forward push
           git commit -m "Update profile assets"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git push origin "HEAD:${TARGET_BRANCH}"
