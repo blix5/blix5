@@ -1,0 +1,30 @@
+name: Update Profile Assets
+
+on:
+  schedule:
+    # Runs every 12 hours
+    - cron: '0 */12 * * *'
+  workflow_dispatch: # Allows manual trigger from the Actions tab
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: git-profile-koi
+        uses: yalongwastaken/git-koi@v1.0.1
+        with:
+          login: ${{ github.repository_owner }}
+          body: white
+          output-dir: koi
+          token: ${{ github.token }}
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add koi/
+          git commit -m "Update profile assets" || echo "No changes to commit"
+          git push
