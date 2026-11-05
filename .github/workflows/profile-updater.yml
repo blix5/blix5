@@ -21,6 +21,9 @@ jobs:
           output-dir: koi
           token: ${{ github.token }}
 
+      - name: Rebase on latest branch tip
+        run: git pull --rebase origin "${GITHUB_REF_NAME}"
+
       - name: Commit and push koi assets
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
